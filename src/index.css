@@ -1,0 +1,158 @@
+@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap');
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* Crypto Companion Design System - Dark theme with vibrant accents */
+
+@layer base {
+  :root {
+    /* Dark Background System */
+    --background: 0 0% 5%;
+    --foreground: 0 0% 98%;
+    
+    /* Card System */
+    --card: 0 0% 8%;
+    --card-foreground: 0 0% 95%;
+    
+    /* Navigation & Popover */
+    --popover: 0 0% 8%;
+    --popover-foreground: 0 0% 95%;
+    
+    /* Brand Primary - Blue */
+    --primary: 207 100% 56%;
+    --primary-foreground: 0 0% 100%;
+    
+    /* Secondary System */
+    --secondary: 0 0% 12%;
+    --secondary-foreground: 0 0% 85%;
+    
+    /* Muted Elements */
+    --muted: 0 0% 10%;
+    --muted-foreground: 0 0% 65%;
+    
+    /* Accent System */
+    --accent: 0 0% 15%;
+    --accent-foreground: 0 0% 90%;
+    
+    /* Status Colors */
+    --destructive: 0 84% 60%;
+    --destructive-foreground: 0 0% 98%;
+    --success: 142 76% 36%;
+    --success-foreground: 0 0% 98%;
+    
+    /* Crypto Tool Colors */
+    --portfolio: 45 94% 68%; /* #f2cf63 - Golden Yellow */
+    --position-calc: 18 93% 67%; /* #f2955e - Orange */
+    --daily-compound: 270 77% 73%; /* #bf9bf2 - Purple */
+    --converter: 80 92% 68%; /* #037cff - Blue */
+    --todo: 197 91% 80%; /* #98ddfa - Light Blue */
+    --add-coin: 75 65% 73%; /* #bcf26b - Green */
+    
+    /* Input & Border */
+    --border: 0 0% 20%;
+    --input: 0 0% 15%;
+    --ring: 207 100% 56%;
+    
+    /* Border Radius System */
+    --radius: 1rem;
+    --radius-sm: 0.5rem;
+    --radius-lg: 1.5rem;
+    
+    /* Shadows & Glows */
+    --shadow-glow: 0 0 30px hsla(207, 100%, 56%, 0.3);
+    --shadow-card: 0 10px 30px -10px hsla(0, 0%, 0%, 0.5);
+    
+    /* Transitions */
+    --transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+
+    --sidebar-background: 0 0% 98%;
+
+    --sidebar-foreground: 240 5.3% 26.1%;
+
+    --sidebar-primary: 240 5.9% 10%;
+
+    --sidebar-primary-foreground: 0 0% 98%;
+
+    --sidebar-accent: 240 4.8% 95.9%;
+
+    --sidebar-accent-foreground: 240 5.9% 10%;
+
+    --sidebar-border: 220 13% 91%;
+
+    --sidebar-ring: 217.2 91.2% 59.8%;
+  }
+}
+
+@layer base {
+  * {
+    @apply border-border;
+  }
+
+  body {
+    @apply bg-background text-foreground font-poppins;
+  }
+}
+
+/* focus effect */
+input:focus {
+  outline: none !important;
+  box-shadow: none !important;
+}
+
+/* Custom Components */
+@layer components {
+  .tool-card {
+    @apply rounded-[20px] p-6 cursor-pointer;
+    box-shadow: var(--shadow-card);
+  }
+  
+  .glass-effect {
+    @apply backdrop-blur-lg border border-white/10;
+    background: rgba(255, 255, 255, 0.05);
+  }
+  
+  .crypto-input {
+    @apply bg-input border-border rounded-lg px-4 py-3 text-foreground placeholder:text-muted-foreground;
+  }
+  
+  .glow-button {
+    box-shadow: var(--shadow-glow);
+  }
+}
+
+/* Disable input spinners */
+input[type="number"]::-webkit-outer-spin-button,
+input[type="number"]::-webkit-inner-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+
+input[type="number"] {
+  -moz-appearance: textfield;
+}
+
+/* Disable scrollbar arrows */
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+::-webkit-scrollbar-thumb {
+  background: hsl(var(--border));
+  border-radius: 3px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: hsl(var(--border));
+}
+
+/* Remove scrollbar buttons */
+::-webkit-scrollbar-button {
+  display: none;
+}
