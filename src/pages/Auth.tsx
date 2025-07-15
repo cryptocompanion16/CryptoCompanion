@@ -12,7 +12,7 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 
-import { toast } from "sonner";
+import { toast } from "sonner"; // Assuming 'sonner' is your toast library
 
 const Auth = () => {
   const navigate = useNavigate();
@@ -26,68 +26,112 @@ const Auth = () => {
 
   // ✅ Redirect when session is active
   useEffect(() => {
-    if (isLoading) return;
+    // Only proceed if session loading is complete
+    if (isLoading) {
+      console.log("Auth: Session still loading...");
+      return;
+    }
 
+    // Small delay to ensure the session context is fully updated
+    // before attempting redirection. This can help prevent flickering.
     const timer = setTimeout(() => {
       if (session) {
+        console.log("Auth: Session detected, navigating to /dashboard");
         navigate("/dashboard");
+      } else {
+        console.log("Auth: No session found or session ended.");
       }
     }, 100);
 
+    // Cleanup the timer if the component unmounts or dependencies change
     return () => clearTimeout(timer);
-  }, [session, isLoading, navigate]);
+  }, [session, isLoading, navigate]); // Dependencies: session, isLoading, navigate
 
   const handleGoogleSignIn = async () => {
-    const { error } = await supabase.auth.signInWithOAuth({
-      provider: "google",
-    });
-    if (error) toast.error("Google Sign-In Error");
+    try {
+      // IMPORTANT: The redirectTo URL MUST be added to your Supabase project's
+      // "Authentication -> URL Configuration -> Redirect URLs"
+      // AND your Google Cloud Console's "Authorized redirect URIs"
+      const { error } = await supabase.auth.signInWithOAuth({
+        provider: "google",
+        options: {
+          // Use window.location.origin to dynamically get the current base URL
+          // This ensures it works correctly in both local dev (http://localhost:XXXX)
+          // and deployed environments.
+          redirectTo: window.location.origin + "/auth",
+        },
+      });
+
+      if (error) {
+        toast.error(`Google Sign-In Failed: ${error.message}`);
+        console.error("Google Sign-In Error:", error);
+      } else {
+        // OAuth flow will redirect the user to Google, then back to /auth/callback
+        // The useEffect will then catch the new session and navigate.
+        console.log("Initiated Google Sign-In, awaiting redirect from Google...");
+      }
+    } catch (err) {
+      toast.error("An unexpected error occurred during Google Sign-In.");
+      console.error("Unexpected Google Sign-In Error:", err);
+    }
   };
 
   const handleEmailAuth = async () => {
-    if (!email) return;
+    if (!email) {
+      toast.warning("Please enter your email.");
+      return;
+    }
 
     try {
       if (isForgotPassword) {
         const { error } = await supabase.auth.resetPasswordForEmail(email, {
-          redirectTo: window.location.origin + "/reset-password",
+          redirectTo: window.location.origin + "/reset-password", // Ensure this route is handled by your app
         });
 
         if (error) {
-          toast.error("Failed to send reset email.");
-          console.error("Reset error:", error.message);
+          toast.error(`Failed to send reset email: ${error.message}`);
+          console.error("Password reset error:", error.message);
         } else {
           toast.success("Password reset link sent to your email.");
-          navigate("/auth");
+          // No navigation here, user needs to check email
+          // navigate("/auth"); // You might keep them on the current page to wait for email
         }
         return;
       }
 
       if (isSignUp) {
+        // Supabase often requires email confirmation for signUp by default.
+        // User won't be "logged in" until they confirm their email.
         const { error } = await supabase.auth.signUp({ email, password });
 
         if (error) {
-          toast.error("Sign-up failed. Check your email.");
+          toast.error(`Sign-up failed: ${error.message}. Please check your email.`);
           console.error("Sign-up error:", error.message);
         } else {
-          toast.success("Check your email to confirm your account.");
-          navigate("/auth");
+          toast.success("Account created! Please check your email to confirm your account.");
+          // No navigation here; the user needs to confirm email first.
+          // navigate("/auth"); // Keep them on the auth page or show a message.
         }
         return;
       }
 
+      // Default: Sign In
       const { error } = await supabase.auth.signInWithPassword({
         email,
         password,
       });
 
       if (error) {
-        toast.error("Invalid login credentials.");
+        toast.error(`Sign-in failed: ${error.message}. Invalid credentials.`);
+        console.error("Sign-in error:", error.message);
+      } else {
+        console.log("Email sign-in successful. Session should be set by auth-helpers.");
+        // The useEffect hook will handle redirection to /dashboard
       }
 
     } catch (err) {
-      toast.error("An unexpected error occurred.");
-      console.error("Auth error:", err);
+      toast.error("An unexpected error occurred during email authentication.");
+      console.error("Auth error (email/password):", err);
     }
   };
 
